@@ -1,5 +1,10 @@
 var map = L.map('map').setView([46.113327, 7.073485], 18);
 
+// Display a basemap
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+
+
+// Initialize and add the legend control
 var symbology = {
     "<b>Heating system</b>": {
         "Oil":"background:#E60000",
