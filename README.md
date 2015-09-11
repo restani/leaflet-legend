@@ -6,7 +6,7 @@ Simple legend control for leaflet. Heavily based on the choropleth demo at http:
 Give it a dict specifying, for each desired legend, an inline style for each value:
 
 	var symbology = {
-		"<b>Heating system</b>":{
+		"<b>Heating system</b>": {
 			"Oil":"background:#E60000",
 			"Gas":"background:#FFAA00"
 		},
@@ -25,4 +25,4 @@ Give it a dict specifying, for each desired legend, an inline style for each val
 
 
 Things are kinda working, but this is far from a real plugin.
-It could use dynamic adding/removing of layers, grabbing the legend from the service, and many more I'm sure.
+It could use dynamic adding/removing of layers, aliases, grabbing the legend from the service, and many more I'm sure.

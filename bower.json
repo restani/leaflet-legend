@@ -19,7 +19,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/restani/project.git"
-  },
-  "private":true
+    "url": "git://github.com/restani/leaflet-legend.git"
+  }
 }
