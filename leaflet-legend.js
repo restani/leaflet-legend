@@ -18,10 +18,9 @@ L.Control.Legend = L.Control.extend({
 		    var symbology = this.layersSymbologies[s];
 		    for (var symbol in symbology) {
 		        div.innerHTML +=
-		            '<i style="' + symbology[symbol] + '"></i> ' +
-		            symbol + "<br />";
+		            '<li style="list-style:none"><i style="' + symbology[symbol] + '" ></i>' +
+		            symbol + "</li>";
 		    }
-
 		    div.innerHTML += "</div>";
 		}
 
