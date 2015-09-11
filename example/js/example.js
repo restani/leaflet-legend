@@ -1,4 +1,4 @@
-var map = L.map('map').setView([46.113327, 7.073485], 10);
+var map = L.map('map').setView([46.113327, 7.073485], 15);
 
 // Display a basemap
 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
