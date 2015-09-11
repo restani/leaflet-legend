@@ -1,3 +1,4 @@
+(function() {
 
 L.Control.Legend = L.Control.extend({
 
@@ -26,3 +27,5 @@ L.Control.Legend = L.Control.extend({
 L.control.legend = function (layersSymbologies, options) {
     return new L.Control.Legend(layersSymbologies, options);
 };
+
+})();
