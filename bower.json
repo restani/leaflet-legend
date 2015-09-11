@@ -1,0 +1,25 @@
+{
+  "name": "leaflet-legend",
+  "description": "Simple legend control for leaflet",
+  "main": [
+    "leaflet-legend.js",
+    "leaflet-legend.css"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "leaflet",
+    "legend",
+    "control"
+  ],
+  "authors": [
+    "Stephane Restani <restani.stephane@bluewin.ch>"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/restani/project.git"
+  },
+  "private":true
+}
