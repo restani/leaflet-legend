@@ -12,7 +12,6 @@ L.Control.Legend = L.Control.extend({
 	    var div = L.DomUtil.create('div', 'info legend')
 
 	    for(var s in this.layersSymbologies) {
-	    	div.innerHTML += "<div>";
 		    div.innerHTML += "<p>" + s + "</p>";
 
 		    var symbology = this.layersSymbologies[s];
@@ -21,7 +20,6 @@ L.Control.Legend = L.Control.extend({
 		            '<li style="list-style:none"><i style="' + symbology[symbol] + '" ></i>' +
 		            symbol + "</li>";
 		    }
-		    div.innerHTML += "</div>";
 		}
 
 		return div;
