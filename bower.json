@@ -20,5 +20,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/restani/leaflet-legend.git"
+  },
+  "dependencies": {
+    "leaflet": "~0.7.3"
   }
 }
