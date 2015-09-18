@@ -14,8 +14,10 @@
 			this.div = L.DomUtil.create('div', 'info legend');
 			this._generateHtml();
 			var me = this;
+			console.log("plugin added")
 
 			map.on("layeradd", function(event) {
+				console.log(event)
 				if ('legend' in event.layer && typeof event.layer.legend !== 'undefined') {
 					me.layersSymbologies[event.layer._leaflet_id] = event.layer.legend;
 				}
@@ -49,8 +51,8 @@
 		}
 	});
 
-	L.control.legend = function(layersSymbologies, options) {
-		return new L.Control.Legend(layersSymbologies, options);
+	L.control.legend = function(legendTitle, options) {
+		return new L.Control.Legend(legendTitle, options);
 	};
 
 })();
