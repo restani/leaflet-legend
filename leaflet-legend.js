@@ -33,18 +33,36 @@
 
 		_generateHtml: function() {
 			this.div.innerHTML = "";
+			this.div.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#' title='Close legend' id='legend-close'>&times;</a></div>"
 			this.div.innerHTML += "<h3>" + this.title + "</h3>";
 
 			for (var s in this.layersSymbologies) {
 				var legend = this.layersSymbologies[s];
 				this.div.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
-				for (var i = 0 ; i < legend.symbols.length ; ++i) {
+				for (var i = 0; i < legend.symbols.length; ++i) {
 					var symbology = legend.symbols[i];
 					this.div.innerHTML +=
 						'<li style="list-style:none"><i style="' + symbology.style + '" ></i>' +
 						symbology.name + "</li>";
 				}
+			}
+
+			this._prepareCloseToggle();
+		},
+
+		_prepareCloseToggle: function() {
+			var me = this;
+			
+			var element = L.DomUtil.get("legend-close");
+			if (element != null) {
+				element.onclick = function() {
+					// Toggle visibility
+					if (L.DomUtil.hasClass(me.div, "legend-hide"))
+						L.DomUtil.removeClass(me.div, "legend-hide");
+					else
+						L.DomUtil.addClass(me.div, "legend-hide");
+				};
 			}
 		}
 	});
