@@ -11,7 +11,7 @@ L.control.legend(legendTitle, options).addTo(map);
 
 
 // Add a basemap, because that's nice
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png');
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
 
 // Adding a new layer, with a legend associated
 var layer = L.marker([46.100831,7.07194]);
