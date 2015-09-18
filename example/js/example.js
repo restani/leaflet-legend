@@ -18,12 +18,12 @@ var layer = L.marker([46.100831,7.07194]);
 
 layer.legend = {
     title: "Layer-title",
-    "Symbols": [{
-        "Name": "Symbol 1",
-        "Style": "background:#E60000"
+    "symbols": [{
+        "name": "Symbol 1",
+        "style": "background:#E60000"
     }, {
-        "Name": "Symbol 2",
-        "Style": "background:#00AA00"
+        "name": "Symbol 2",
+        "style": "background:#00AA00"
     }]
 };
 

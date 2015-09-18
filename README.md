@@ -23,12 +23,12 @@ Then, add a 'legend' property to each layer that needs to have an associated leg
 
     layer.legend = {
         title: "Layer-title",
-        "Symbols": [{
-            "Name": "Symbol1",
-            "Style": "background:#E60000"
+        "symbols": [{
+            "name": "Symbol1",
+            "style": "background:#E60000"
         }, {
-            "Name": "Symbol 2",
-            "Style": "background:#00AA00"
+            "name": "Symbol 2",
+            "style": "background:#00AA00"
         }]
     };
 
