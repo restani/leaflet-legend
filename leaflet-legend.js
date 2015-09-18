@@ -39,11 +39,11 @@
 				var legend = this.layersSymbologies[s];
 				this.div.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
-				for (var i = 0 ; i < legend.Symbols.length ; ++i) {
-					var symbology = legend.Symbols[i];
+				for (var i = 0 ; i < legend.symbols.length ; ++i) {
+					var symbology = legend.symbols[i];
 					this.div.innerHTML +=
-						'<li style="list-style:none"><i style="' + symbology.Style + '" ></i>' +
-						symbology.Name + "</li>";
+						'<li style="list-style:none"><i style="' + symbology.style + '" ></i>' +
+						symbology.name + "</li>";
 				}
 			}
 		}
