@@ -6,12 +6,14 @@
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
 }
+
 .info h4 {
     margin: 0 0 5px;
     color: #777;
 }
 
 .legend {
+    position: relative;
     line-height: 20px;
     color: #555;
     left: 0%;
@@ -20,6 +22,7 @@
     -o-transition: left 1s;
     transition: left 1s;
 }
+
 .legend i {
     width: 18px;
     height: 18px;
@@ -32,3 +35,15 @@
     left: 100%;
 }
 
+.legend-show {
+    padding: 6px 8px;
+    border-radius: 5px;
+    position: absolute;
+    top: 0px;
+    float: right;
+    right: 0px;
+}
+
+.hidden {
+    display: none;
+}
