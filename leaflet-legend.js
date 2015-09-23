@@ -1,24 +1,38 @@
 (function() {
 
+	// Add the String.format() method. Taken from somewhere on the net.
+	(function() { // First, checks if it isn't implemented yet.
+		if (!String.prototype.format) {
+			String.prototype.format = function() {
+				var args = arguments;
+				return this.replace(/{(\d+)}/g, function(match, number) {
+					return typeof args[number] != 'undefined' ? args[number] : match;
+				});
+			};
+		}
+
+	})();
+
+
 	// Tip found at http://stackoverflow.com/a/9090128
-	function transitionEndEventName () {
-	    var i,
-	        undefined,
-	        el = document.createElement('div'),
-	        transitions = {
-	            'transition':'transitionend',
-	            'OTransition':'otransitionend',  // oTransitionEnd in very old Opera
-	            'MozTransition':'transitionend',
-	            'WebkitTransition':'webkitTransitionEnd'
-	        };
+	function transitionEndEventName() {
+		var i,
+			undefined,
+			el = document.createElement('div'),
+			transitions = {
+				'transition': 'transitionend',
+				'OTransition': 'otransitionend', // oTransitionEnd in very old Opera
+				'MozTransition': 'transitionend',
+				'WebkitTransition': 'webkitTransitionEnd'
+			};
 
-	    for (i in transitions) {
-	        if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
-	            return transitions[i];
-	        }
-	    }
+		for (i in transitions) {
+			if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+				return transitions[i];
+			}
+		}
 
-	    //TODO: throw 'TransitionEnd event is not supported in this browser'; 
+		//TODO: throw 'TransitionEnd event is not supported in this browser'; 
 	}
 
 	L.Control.Legend = L.Control.extend({
@@ -33,10 +47,10 @@
 		onAdd: function(map) {
 			var div = L.DomUtil.create('div', '');
 
-			if(this.visibleLegendDiv == null)
+			if (this.visibleLegendDiv == null)
 				this.visibleLegendDiv = L.DomUtil.create('div', 'info legend', div);
-			if(this.hiddenLegendDiv == null)
-				this.hiddenLegendDiv =  L.DomUtil.create('div', 'legend-show hidden', div);
+			if (this.hiddenLegendDiv == null)
+				this.hiddenLegendDiv = L.DomUtil.create('div', 'legend-show hidden', div);
 
 			this._generateHtml();
 			var me = this;
@@ -44,6 +58,7 @@
 			map.on("layeradd", function(event) {
 				if ('legend' in event.layer && typeof event.layer.legend !== 'undefined') {
 					me.layersSymbologies[event.layer._leaflet_id] = event.layer.legend;
+					me._setStyleForLayer(layer, event.layer.legend);
 				}
 
 				me._generateHtml();
@@ -69,16 +84,18 @@
 
 			var transitionEnd = transitionEndEventName();
 			var me = this;
-			this.visibleLegendDiv.addEventListener(transitionEnd, function(event) { return me._onTransitionEnd(event, me); }, false);
+			this.visibleLegendDiv.addEventListener(transitionEnd, function(event) {
+				return me._onTransitionEnd(event, me);
+			}, false);
 
 			for (var s in this.layersSymbologies) {
 				var legend = this.layersSymbologies[s];
 				this.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
-				for (var i = 0; i < legend.symbols.length; ++i) {
-					var symbology = legend.symbols[i];
+				for (var i = 0; i < legend.style.expressions.length; ++i) {
+					var symbology = legend.style.expressions[i];
 					this.visibleLegendDiv.innerHTML +=
-						'<li style="list-style:none"><i style="' + symbology.style + '" ></i>' +
+						'<li style="list-style:none"><i style="' + symbology.legendStyle + '" ></i>' +
 						symbology.name + "</li>";
 				}
 			}
@@ -89,7 +106,7 @@
 
 		_prepareHideButton: function() {
 			var me = this;
-			
+
 			var element = L.DomUtil.get("legend-hide");
 			if (element != null) {
 				element.onclick = function() {
@@ -101,7 +118,7 @@
 
 		_prepareShowButton: function() {
 			var me = this;
-			
+
 			var element = L.DomUtil.get("legend-show");
 			if (element != null) {
 				element.onclick = function() {
@@ -115,10 +132,37 @@
 
 		_onTransitionEnd: function(event, me) {
 			var isHidden = L.DomUtil.hasClass(event.target, 'legend-hide');
-			if(isHidden) { // Legend is hidden. Activate the show button
+			if (isHidden) { // Legend is hidden. Activate the show button
 				L.DomUtil.removeClass(me.hiddenLegendDiv, 'hidden');
 			} else { // Legend is shown. Hide the show button
 
+			}
+		},
+
+		_setStyleForLayer: function(layer, legend) {
+			var me = this;
+			if (typeof legend !== 'undefined' && 'style' in legend && typeof legend.style !== 'undefined') {
+				layer.setStyle(function(feature) {
+					return me._styleFct(feature, legend.style);
+				});
+			}
+		},
+
+		_styleFct: function(feature, style) {
+			var fieldValues = [];
+			for (var i = 0; i < style.fields.length; ++i) {
+				// TODO: check for existence of the field in the feature's properties
+				fieldValues.push(feature.properties[style.fields[i]]);
+			}
+
+			for (var i = 0; i < style.expressions.length; ++i) {
+				var exprObject = style.expressions[i];
+				// We need to invoke the method like this, because our format function
+				// isn't prepared to accept arrays
+				var formatted = "".format.apply(exprObject.expr, fieldValues);
+				if (eval(formatted) === true) {
+					return exprObject.style;
+				}
 			}
 		}
 	});
