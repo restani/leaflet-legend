@@ -57,11 +57,11 @@
 		_generateHtml: function() {
 			// show button
 			this.hiddenLegendDiv.innerHTML = "";
-			this.hiddenLegendDiv.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#'  title='Show legend' id='legend-show'><i class='fa fa-caret-right'></i></a></div>";
+			this.hiddenLegendDiv.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#'  title='Show legend' id='legend-show'><i class='fa fa-caret-left'></i></a></div>";
 
 			this.visibleLegendDiv.innerHTML = "";
 			// hide button
-			this.visibleLegendDiv.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#' title='Hide legend' id='legend-hide'><i class='fa fa-caret-left'></i></a></div>";
+			this.visibleLegendDiv.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#' title='Hide legend' id='legend-hide'><i class='fa fa-caret-right'></i></a></div>";
 			this.visibleLegendDiv.innerHTML += "<h3>" + this.title + "</h3>";
 
 			var transitionEnd = transitionEndEventName();
