@@ -32,8 +32,11 @@
 
 		onAdd: function(map) {
 			var div = L.DomUtil.create('div', '');
-			this.visibleLegendDiv = L.DomUtil.create('div', 'info legend', div);
-			this.hiddenLegendDiv =  L.DomUtil.create('div', 'legend-show hidden', div);
+
+			if(this.visibleLegendDiv == null)
+				this.visibleLegendDiv = L.DomUtil.create('div', 'info legend', div);
+			if(this.hiddenLegendDiv == null)
+				this.hiddenLegendDiv =  L.DomUtil.create('div', 'legend-show hidden', div);
 
 			this._generateHtml();
 			var me = this;
