@@ -58,7 +58,7 @@
 			map.on("layeradd", function(event) {
 				if ('legend' in event.layer && typeof event.layer.legend !== 'undefined') {
 					me.layersSymbologies[event.layer._leaflet_id] = event.layer.legend;
-					me._setStyleForLayer(layer, event.layer.legend);
+					me._setStyleForLayer(event.layer, event.layer.legend);
 				}
 
 				me._generateHtml();
