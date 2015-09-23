@@ -18,22 +18,27 @@ First, create and add the control to the map:
     L.control.legend(legendTitle, options).addTo(map);
 
 
-Then, add a 'legend' property to each layer that needs to have an associated legend:
+Then load your layer, but don't add it to the map yet. You first need to add a 'legend' property to it:
 
 
     layer.legend = {
-        title: "Layer-title",
-        "symbols": [{
-            "name": "Symbol1",
-            "style": "background:#E60000"
-        }, {
-            "name": "Symbol 2",
-            "style": "background:#00AA00"
-        }]
+        title: "Props", /* This is the title of the legend */
+        "style": { /* Object containing all style definitions */
+            "fields": ["myprop", "myotherprop"], /* Which feature properties will this styling use */
+            "expressions": [{ /* Expressions are evaluated. When true, the given styling is applied */
+                name: "MyProp = MyOtherProp", /* Text that will be displayed on the legend control */
+                expr: "{0} == {1}", /* Expression to evaluate  */
+                style: { /* Leaflet styling to apply in case the expression is evaluated to true */
+                    fillColor: "#FF0000",
+                    fillOpacity: 1,
+                    weight: 1
+                },
+                legendStyle: "background:#FF0000" /* Legend (css) styling to apply to the <i> object */
+            }]
+        }
     };
 
 
-And that's all. When you add/remove layers to the map, the legend should update to show or hide accordingly.
-
+Then add your layer to the map. Next, when you add/remove layers to the map, the legend should update to show or hide accordingly.
 
 Things are kinda working, but there is still a lot of work to do.
