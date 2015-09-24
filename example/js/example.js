@@ -255,9 +255,10 @@ var layer = L.geoJson(geojsonObject);
 
 layer.legend = {
     title: "Feature properties",
-    "style": {
-        "fields": ["myprop", "myotherprop"],
-        "expressions": [{
+    showLegend: true,
+    style: {
+        fields: ["myprop", "myotherprop"],
+        expressions: [{
             name: "MyProp = MyOtherProp",
             expr: "{0} == {1}",
             style: {

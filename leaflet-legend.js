@@ -90,6 +90,9 @@
 
 			for (var s in this.layersSymbologies) {
 				var legend = this.layersSymbologies[s];
+				
+				if(!legend.showLegend) continue;
+
 				this.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
 				for (var i = 0; i < legend.style.expressions.length; ++i) {
