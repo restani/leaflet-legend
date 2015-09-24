@@ -23,9 +23,10 @@ Then load your layer, but don't add it to the map yet. You first need to add a '
 
     layer.legend = {
         title: "Props", /* This is the title of the legend */
-        "style": { /* Object containing all style definitions */
-            "fields": ["myprop", "myotherprop"], /* Which feature properties will this styling use */
-            "expressions": [{ /* Expressions are evaluated. When true, the given styling is applied */
+        showLegend: true, /* Whether the legend should be visible or not */
+        style: { /* Object containing all style definitions */
+            fields: ["myprop", "myotherprop"], /* Which feature properties will this styling use */
+            expressions: [{ /* Expressions are evaluated. When true, the given styling is applied */
                 name: "MyProp = MyOtherProp", /* Text that will be displayed on the legend control */
                 expr: "{0} == {1}", /* Expression to evaluate  */
                 style: { /* Leaflet styling to apply in case the expression is evaluated to true */
