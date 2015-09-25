@@ -57,8 +57,18 @@
 
 			map.on("layeradd", function(event) {
 				if ('legend' in event.layer && typeof event.layer.legend !== 'undefined') {
-					me.layersSymbologies[event.layer._leaflet_id] = event.layer.legend;
-					me._setStyleForLayer(event.layer, event.layer.legend);
+					var legend = event.layer.legend;
+
+					me.layersSymbologies[event.layer._leaflet_id] = legend;
+					if (typeof legend.style !== 'undefined') {
+						// Apparently setStyle doesn't work sometimes...
+						event.layer.options.style = function(feature) {
+							return me._styleFct(feature, legend.style);
+						};
+						event.layer.setStyle(function(feature) {
+							return me._styleFct(feature, legend.style);
+						});
+					}
 				}
 
 				me._generateHtml();
@@ -90,8 +100,8 @@
 
 			for (var s in this.layersSymbologies) {
 				var legend = this.layersSymbologies[s];
-				
-				if(!legend.showLegend) continue;
+
+				if (!legend.showLegend) continue;
 
 				this.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
@@ -142,15 +152,6 @@
 			}
 		},
 
-		_setStyleForLayer: function(layer, legend) {
-			var me = this;
-			if (typeof legend !== 'undefined' && 'style' in legend && typeof legend.style !== 'undefined') {
-				layer.setStyle(function(feature) {
-					return me._styleFct(feature, legend.style);
-				});
-			}
-		},
-
 		_styleFct: function(feature, style) {
 			var fieldValues = [];
 			for (var i = 0; i < style.fields.length; ++i) {
@@ -160,7 +161,7 @@
 
 			for (var i = 0; i < style.expressions.length; ++i) {
 				var exprObject = style.expressions[i];
-				// We need to invoke the method like this, because our format function
+				// We need to invoke the method with apply, because our format function
 				// isn't prepared to accept arrays
 				var formatted = "".format.apply(exprObject.expr, fieldValues);
 				if (eval(formatted) === true) {
