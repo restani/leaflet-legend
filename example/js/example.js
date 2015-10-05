@@ -234,26 +234,7 @@ var geojsonObject = {
     }]
 };
 
-var map = L.map('map').setView([46.100831, 7.07194], 2);
-
-// Initialize the legend control (do this before adding layers to the map!)
-var options = {
-    position: 'topright'
-};
-
-var legendTitle = "My beautiful legend";
-
-L.control.legend(legendTitle, options).addTo(map);
-
-
-// Add a basemap, because that's nice
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
-
-
-// Adding a new layer, with a legend associated
-var layer = L.geoJson(geojsonObject);
-
-layer.options.legend = [{
+var legendJson = [{
     title: "Feature properties",
     showLegend: true,
     style: {
@@ -295,8 +276,88 @@ layer.options.legend = [{
             },
             legendStyle: "background:#0000FF"
         }]
+    },
+}, {
+    title: "Other legend",
+    showLegend: true,
+    style: {
+        fields: ["myprop", "myotherprop"],
+        expressions: [{
+            name: "MyProp = MyOtherProp",
+            expr: "{0} == {1}",
+            style: {
+                fillColor: "#FF0000",
+                fillOpacity: 1,
+                weight: 1
+            },
+            legendStyle: "background:#FF0000"
+        }, {
+            name: "MyProp < 3",
+            expr: "{0} < 3",
+            style: {
+                fillColor: "#FFFF00",
+                fillOpacity: 1,
+                weight: 1
+            },
+            legendStyle: "background:#FFFF00"
+        }, {
+            name: "MyProp = 3",
+            expr: "{0} == 3",
+            style: {
+                fillColor: "#00FFFF",
+                fillOpacity: 1,
+                weight: 1
+            },
+            legendStyle: "background:#00FFFF"
+        }, {
+            name: "MyProp > 3",
+            expr: "{0} > 3",
+            style: {
+                fillColor: "#FF00FF",
+                fillOpacity: 1,
+                weight: 1
+            },
+            legendStyle: "background:#FF00FF"
+        }]
     }
 }];
+
+
+map = L.map('map').setView([46.100831, 7.07194], 2);
+
+// Initialize the legend control (do this before adding layers to the map!)
+var options = {
+    position: 'topright'
+};
+
+var legendTitle = "My beautiful legend";
+
+var legendControl = L.control.legend(legendTitle, options);
+legendControl.addTo(map);
+
+
+// Add a basemap, because that's nice
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+
+
+// Adding a new layer
+var layer = L.geoJson(geojsonObject);
+
+// Bind to the style switching button. 
+// When clicked, it switches the style and legend from one to the other
+var switchButton = L.DomUtil.get("switchStyleButton");
+L.DomEvent.addListener(switchButton, "click", function() { 
+    if(layer.options.selectedStyle === 0)
+        layer.options.selectedStyle = 1;
+    else
+        layer.options.selectedStyle = 0;
+
+    // update() updates the legend and the styles
+    legendControl.update();
+});
+
+// Associate a legend with the data
+layer.options.legend = legendJson;
 
 // Finally, add the layer to the map
 layer.addTo(map);

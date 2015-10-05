@@ -43,7 +43,7 @@ Then load your layer, but don't add it to the map yet. You first need to add a '
 
 Then add your layer to the map. Next, when you add/remove layers to the map, the legend should update to show or hide accordingly.
 
-You can define multiple styles and legends for a layer, that's why layer.options.legend is an array. Use the layer.options.selectedStyle to select a style in that array. Later, call legendControl.generateHtml() to reset the legend. 
+You can define multiple styles and legends for a layer, that's why layer.options.legend is an array. Use the layer.options.selectedStyle to select a style in that array. Later, call legendControl.update() to update the legend and styles. 
 
 
 Things are kinda working, but there is still a lot of work to do.

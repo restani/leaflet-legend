@@ -41,7 +41,6 @@
 			L.setOptions(this, options);
 
 			this.title = title;
-			this.layersOptions = {};
 		},
 
 		onAdd: function(map) {
@@ -52,16 +51,34 @@
 			if (this.hiddenLegendDiv == null)
 				this.hiddenLegendDiv = L.DomUtil.create('div', 'legend-show hidden', div);
 
-			this.generateHtml();
+			this._map = map;
+
+			this.update();
 			var me = this;
 
 			map.on("layeradd", function(event) {
-				if (event.layer.options && 'legend' in event.layer.options && event.layer.options.legend) {
-					var layer = event.layer;
-					layer.options.selectedStyle = 0;
+				event.layer.options.selectedStyle = 0;
+				me.update();
+			});
 
-					event.layer.options.style = function(feature) {
-						var style = layer.options.legend[layer.options.selectedStyle].style;
+			map.on("layerremove", function(event) {
+				me.update();
+			});
+
+			return div;
+		},
+
+		update: function() {
+			this._updateStyles();
+			this._generateHtml();
+		},
+
+		_updateStyles: function() {
+			this._map.eachLayer(function(layer) {
+				if (layer.options && 'legend' in layer.options && layer.options.legend) {
+
+					var styleFct = function(feature) {
+						var style = layer.options.legend[layer.options.selectedStyle || 0].style;
 
 						var fieldValues = [];
 						for (var i = 0; i < style.fields.length; ++i) {
@@ -79,24 +96,13 @@
 							}
 						}
 					}
-
-					event.layer.setStyle(event.layer.options.style);
-
-					me.layersOptions[event.layer._leaflet_id] = layer.options;
+					layer.setStyle(styleFct);
+					layer.options.style = styleFct;
 				}
-
-				me.generateHtml();
 			});
-
-			map.on("layerremove", function(event) {
-				delete me.layersOptions[event.layer._leaflet_id];
-				me.generateHtml();
-			});
-
-			return div;
 		},
 
-		generateHtml: function() {
+		_generateHtml: function() {
 			// show button
 			this.hiddenLegendDiv.innerHTML = "";
 			this.hiddenLegendDiv.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#'  title='Show legend' id='legend-show'><i class='fa fa-caret-left'></i></a></div>";
@@ -112,21 +118,24 @@
 				return me._onTransitionEnd(event, me);
 			}, false);
 
-			for (var s in this.layersOptions) {
-				var options = this.layersOptions[s];
-				var legend = options.legend[options.selectedStyle];
+			this._map.eachLayer(function(layer) {
+				if (!layer.options || !layer.options.legend) return;
 
-				if (!legend.showLegend) continue;
+				var options = layer.options;
 
-				this.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
+				var legend = options.legend[options.selectedStyle || 0];
+
+				if (!legend.showLegend) return;
+
+				me.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
 				for (var i = 0; i < legend.style.expressions.length; ++i) {
 					var symbology = legend.style.expressions[i];
-					this.visibleLegendDiv.innerHTML +=
+					me.visibleLegendDiv.innerHTML +=
 						'<li style="list-style:none"><i style="' + symbology.legendStyle + '" ></i>' +
 						symbology.name + "</li>";
 				}
-			}
+			});
 
 			this._prepareHideButton();
 			this._prepareShowButton();
