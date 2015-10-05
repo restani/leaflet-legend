@@ -41,7 +41,7 @@
 			L.setOptions(this, options);
 
 			this.title = title;
-			this.layersSymbologies = {};
+			this.layersOptions = {};
 		},
 
 		onAdd: function(map) {
@@ -52,37 +52,51 @@
 			if (this.hiddenLegendDiv == null)
 				this.hiddenLegendDiv = L.DomUtil.create('div', 'legend-show hidden', div);
 
-			this._generateHtml();
+			this.generateHtml();
 			var me = this;
 
 			map.on("layeradd", function(event) {
-				if ('legend' in event.layer && typeof event.layer.legend !== 'undefined') {
-					var legend = event.layer.legend;
+				if (event.layer.options && 'legend' in event.layer.options && event.layer.options.legend) {
+					var layer = event.layer;
+					layer.options.selectedStyle = 0;
 
-					me.layersSymbologies[event.layer._leaflet_id] = legend;
-					if (typeof legend.style !== 'undefined') {
-						// Apparently setStyle doesn't work sometimes...
-						event.layer.options.style = function(feature) {
-							return me._styleFct(feature, legend.style);
-						};
-						event.layer.setStyle(function(feature) {
-							return me._styleFct(feature, legend.style);
-						});
+					event.layer.options.style = function(feature) {
+						var style = layer.options.legend[layer.options.selectedStyle].style;
+
+						var fieldValues = [];
+						for (var i = 0; i < style.fields.length; ++i) {
+							// TODO: check for existence of the field in the feature's properties
+							fieldValues.push(feature.properties[style.fields[i]]);
+						}
+
+						for (var i = 0; i < style.expressions.length; ++i) {
+							var exprObject = style.expressions[i];
+							// We need to invoke the method with apply, because our format function
+							// isn't prepared to accept arrays
+							var formatted = "".format.apply(exprObject.expr, fieldValues);
+							if (eval(formatted) === true) {
+								return exprObject.style;
+							}
+						}
 					}
+
+					event.layer.setStyle(event.layer.options.style);
+
+					me.layersOptions[event.layer._leaflet_id] = layer.options;
 				}
 
-				me._generateHtml();
+				me.generateHtml();
 			});
 
 			map.on("layerremove", function(event) {
-				delete me.layersSymbologies[event.layer._leaflet_id];
-				me._generateHtml();
+				delete me.layersOptions[event.layer._leaflet_id];
+				me.generateHtml();
 			});
 
 			return div;
 		},
 
-		_generateHtml: function() {
+		generateHtml: function() {
 			// show button
 			this.hiddenLegendDiv.innerHTML = "";
 			this.hiddenLegendDiv.innerHTML += "<div class='leaflet-bar leaflet-control'><a href='#'  title='Show legend' id='legend-show'><i class='fa fa-caret-left'></i></a></div>";
@@ -98,8 +112,9 @@
 				return me._onTransitionEnd(event, me);
 			}, false);
 
-			for (var s in this.layersSymbologies) {
-				var legend = this.layersSymbologies[s];
+			for (var s in this.layersOptions) {
+				var options = this.layersOptions[s];
+				var legend = options.legend[options.selectedStyle];
 
 				if (!legend.showLegend) continue;
 
@@ -149,24 +164,6 @@
 				L.DomUtil.removeClass(me.hiddenLegendDiv, 'hidden');
 			} else { // Legend is shown. Hide the show button
 
-			}
-		},
-
-		_styleFct: function(feature, style) {
-			var fieldValues = [];
-			for (var i = 0; i < style.fields.length; ++i) {
-				// TODO: check for existence of the field in the feature's properties
-				fieldValues.push(feature.properties[style.fields[i]]);
-			}
-
-			for (var i = 0; i < style.expressions.length; ++i) {
-				var exprObject = style.expressions[i];
-				// We need to invoke the method with apply, because our format function
-				// isn't prepared to accept arrays
-				var formatted = "".format.apply(exprObject.expr, fieldValues);
-				if (eval(formatted) === true) {
-					return exprObject.style;
-				}
 			}
 		}
 	});

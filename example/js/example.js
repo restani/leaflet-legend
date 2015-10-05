@@ -253,7 +253,7 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
 // Adding a new layer, with a legend associated
 var layer = L.geoJson(geojsonObject);
 
-layer.legend = {
+layer.options.legend = [{
     title: "Feature properties",
     showLegend: true,
     style: {
@@ -296,7 +296,7 @@ layer.legend = {
             legendStyle: "background:#0000FF"
         }]
     }
-};
+}];
 
 // Finally, add the layer to the map
 layer.addTo(map);
