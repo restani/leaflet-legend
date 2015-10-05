@@ -57,7 +57,6 @@
 			var me = this;
 
 			map.on("layeradd", function(event) {
-				event.layer.options.selectedStyle = 0;
 				me.update();
 			});
 
@@ -77,8 +76,11 @@
 			this._map.eachLayer(function(layer) {
 				if (layer.options && 'legend' in layer.options && layer.options.legend) {
 
+					if(!("selectedStyle" in layer.options))
+						layer.options.selectedStyle = 0;
+
 					var styleFct = function(feature) {
-						var style = layer.options.legend[layer.options.selectedStyle || 0].style;
+						var style = layer.options.legend[layer.options.selectedStyle].style;
 
 						var fieldValues = [];
 						for (var i = 0; i < style.fields.length; ++i) {
