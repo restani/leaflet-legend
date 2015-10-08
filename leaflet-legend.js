@@ -41,6 +41,18 @@
 			L.setOptions(this, options);
 
 			this.title = title;
+			this._watchedLayers = {};
+		},
+
+		AddLayer: function(layer) {
+			this._watchedLayers[layer._leaflet_id] = layer;
+			this._setStyleForLayer(layer);
+			this._generateHtml();
+		},
+
+		RemoveLayer: function(layer) {
+			delete this._watchedLayers[layer._leaflet_id];
+			this._generateHtml();
 		},
 
 		onAdd: function(map) {
@@ -54,15 +66,6 @@
 			this._map = map;
 
 			this.update();
-			var me = this;
-
-			map.on("layeradd", function(event) {
-				me.update();
-			});
-
-			map.on("layerremove", function(event) {
-				me.update();
-			});
 
 			return div;
 		},
@@ -73,35 +76,38 @@
 		},
 
 		_updateStyles: function() {
-			this._map.eachLayer(function(layer) {
-				if (layer.options && 'legend' in layer.options && layer.options.legend) {
+			for(var id in this._watchedLayers)
+				this._setStyleForLayer(this._watchedLayers[id]);
+		},
 
-					if(!("selectedStyle" in layer.options))
-						layer.options.selectedStyle = 0;
+		_setStyleForLayer: function(layer) {
+			if (layer.options && 'legend' in layer.options && layer.options.legend) {
 
-					var styleFct = function(feature) {
-						var style = layer.options.legend[layer.options.selectedStyle].style;
+				if (!("selectedStyle" in layer.options))
+					layer.options.selectedStyle = 0;
 
-						var fieldValues = [];
-						for (var i = 0; i < style.fields.length; ++i) {
-							// TODO: check for existence of the field in the feature's properties
-							fieldValues.push(feature.properties[style.fields[i]]);
-						}
+				var styleFct = function(feature) {
+					var style = layer.options.legend[layer.options.selectedStyle].style;
 
-						for (var i = 0; i < style.expressions.length; ++i) {
-							var exprObject = style.expressions[i];
-							// We need to invoke the method with apply, because our format function
-							// isn't prepared to accept arrays
-							var formatted = "".format.apply(exprObject.expr, fieldValues);
-							if (eval(formatted) === true) {
-								return exprObject.style;
-							}
+					var fieldValues = [];
+					for (var i = 0; i < style.fields.length; ++i) {
+						// TODO: check for existence of the field in the feature's properties
+						fieldValues.push(feature.properties[style.fields[i]]);
+					}
+
+					for (var i = 0; i < style.expressions.length; ++i) {
+						var exprObject = style.expressions[i];
+						// We need to invoke the method with apply, because our format function
+						// isn't prepared to accept arrays
+						var formatted = "".format.apply(exprObject.expr, fieldValues);
+						if (eval(formatted) === true) {
+							return exprObject.style;
 						}
 					}
-					layer.setStyle(styleFct);
-					layer.options.style = styleFct;
 				}
-			});
+				layer.setStyle(styleFct);
+				layer.options.style = styleFct;
+			}
 		},
 
 		_generateHtml: function() {
@@ -120,14 +126,16 @@
 				return me._onTransitionEnd(event, me);
 			}, false);
 
-			this._map.eachLayer(function(layer) {
+			for(var id in this._watchedLayers) {
+				var layer = this._watchedLayers[id];
+
 				if (!layer.options || !layer.options.legend) return;
 
 				var options = layer.options;
 
 				var legend = options.legend[options.selectedStyle || 0];
 
-				if (!legend.showLegend) return;
+				if (!legend.showLegend) continue;
 
 				me.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
 
@@ -137,7 +145,7 @@
 						'<li style="list-style:none"><i style="' + symbology.legendStyle + '" ></i>' +
 						symbology.name + "</li>";
 				}
-			});
+			}
 
 			this._prepareHideButton();
 			this._prepareShowButton();
