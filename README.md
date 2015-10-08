@@ -2,10 +2,6 @@ VERY RECENT PACKAGE
 
 Simple legend control for leaflet. Heavily based on the choropleth demo at http://leafletjs.com/examples/choropleth.html
 
-Before adding a layer to the map, give it a 'legend' property, containing a dict of the following format:
-The style property is added as inline style to an \<i\> tag.
-
-
 First, create and add the control to the map:
 
 
@@ -19,8 +15,7 @@ First, create and add the control to the map:
     legendControl.addTo(map);
 
 
-Then load your layer, but don't add it to the map yet. You first need to add a 'legend' property to its options:
-
+Then load your layer, add it to the map and add a 'legend' property to its options:
 
     layer.options.legend = [{
         title: "Props", /* This is the title of the legend */
@@ -41,7 +36,13 @@ Then load your layer, but don't add it to the map yet. You first need to add a '
     }];
 
 
-Then add your layer to the map. Next, when you add/remove layers to the map, the legend should update to show or hide accordingly.
+(the style property is added as inline style to an \<i\> tag)
+
+Finally, tell the control to watch that layer and display styles and legend for it:
+
+
+    legendControl.AddLayer(layer)
+
 
 You can define multiple styles and legends for a layer, that's why layer.options.legend is an array. Use the layer.options.selectedStyle to select a style in that array. Later, call legendControl.update() to update the legend and styles. 
 

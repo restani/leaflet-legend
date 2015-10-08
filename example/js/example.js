@@ -341,9 +341,16 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
 
 
 // Adding a new layer
-var layer = L.geoJson(geojsonObject);
+var layer = L.geoJson(geojsonObject).addTo(map);
 
-// Bind to the style switching button. 
+// Associate a legend with the data
+layer.options.legend = legendJson;
+
+// Then tell the legendControl to apply symbology to this layer
+legendControl.AddLayer(layer);
+
+
+// Also, bind the control to the style switching button. 
 // When clicked, it switches the style and legend from one to the other
 var switchButton = L.DomUtil.get("switchStyleButton");
 L.DomEvent.addListener(switchButton, "click", function() { 
@@ -355,9 +362,3 @@ L.DomEvent.addListener(switchButton, "click", function() {
     // update() updates the legend and the styles
     legendControl.update();
 });
-
-// Associate a legend with the data
-layer.options.legend = legendJson;
-
-// Finally, add the layer to the map
-layer.addTo(map);
