@@ -17,7 +17,6 @@
 	// Tip found at http://stackoverflow.com/a/9090128
 	function transitionEndEventName() {
 		var i,
-			undefined,
 			el = document.createElement('div'),
 			transitions = {
 				'transition': 'transitionend',
@@ -40,6 +39,9 @@
 		initialize: function(title, options) {
 			L.setOptions(this, options);
 
+			this.hiddenLegendDiv = null;
+			this.visibleLegendDiv = null;
+
 			this.title = title;
 			this._watchedLayers = {};
 		},
@@ -58,9 +60,9 @@
 		onAdd: function(map) {
 			var div = L.DomUtil.create('div', '');
 
-			if (this.visibleLegendDiv == null)
+			if (this.visibleLegendDiv === null)
 				this.visibleLegendDiv = L.DomUtil.create('div', 'info legend', div);
-			if (this.hiddenLegendDiv == null)
+			if (this.hiddenLegendDiv === null)
 				this.hiddenLegendDiv = L.DomUtil.create('div', 'legend-show hidden', div);
 
 			this._map = map;
@@ -76,7 +78,7 @@
 		},
 
 		_updateStyles: function() {
-			for(var id in this._watchedLayers)
+			for (var id in this._watchedLayers)
 				this._setStyleForLayer(this._watchedLayers[id]);
 		},
 
@@ -104,7 +106,7 @@
 							return exprObject.style;
 						}
 					}
-				}
+				};
 				layer.setStyle(styleFct);
 				layer.options.style = styleFct;
 			}
@@ -126,7 +128,7 @@
 				return me._onTransitionEnd(event, me);
 			}, false);
 
-			for(var id in this._watchedLayers) {
+			for (var id in this._watchedLayers) {
 				var layer = this._watchedLayers[id];
 
 				if (!layer.options || !layer.options.legend) return;
@@ -155,11 +157,17 @@
 			var me = this;
 
 			var element = L.DomUtil.get("legend-hide");
-			if (element != null) {
-				element.onclick = function() {
+			if (element !== null) {
+				L.DomEvent.addListener(element, 'click', function(e) {
 					// Hide div
 					L.DomUtil.addClass(me.visibleLegendDiv, "legend-hide");
-				};
+
+					L.DomEvent.stopPropagation(e);
+				});
+
+				L.DomEvent.addListener(element, 'mousedown', function(e) {
+					L.DomEvent.stopPropagation(e);
+				});
 			}
 		},
 
@@ -167,13 +175,19 @@
 			var me = this;
 
 			var element = L.DomUtil.get("legend-show");
-			if (element != null) {
-				element.onclick = function() {
+			if (element !== null) {
+				L.DomEvent.addListener(element, 'click', function(e) {
 					// show div
 					L.DomUtil.removeClass(me.visibleLegendDiv, "legend-hide");
 					// Hide button
 					L.DomUtil.addClass(me.hiddenLegendDiv, 'hidden');
-				};
+
+					L.DomEvent.stopPropagation(e);
+				});
+
+				L.DomEvent.addListener(element, 'mousedown', function(e) {
+					L.DomEvent.stopPropagation(e);
+				});
 			}
 		},
 
