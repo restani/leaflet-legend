@@ -43,17 +43,17 @@
 			this.visibleLegendDiv = null;
 
 			this.title = title;
-			this._watchedLayers = {};
+			this._legendGraphicUrls = [];
 		},
 
-		AddLayer: function(layer) {
-			this._watchedLayers[layer._leaflet_id] = layer;
-			this._setStyleForLayer(layer);
+		AddLegendGraphic: function(legendGraphicUrl) {
+			this._legendGraphicUrls.push(legendGraphicUrl);
 			this._generateHtml();
 		},
 
-		RemoveLayer: function(layer) {
-			delete this._watchedLayers[layer._leaflet_id];
+		RemoveLegendGraphic: function(legendGraphicUrl) {
+			var index = this._legendGraphicUrls.indexOf(legendGraphicUrl);
+			this._legendGraphicUrls.splice(index, 1);
 			this._generateHtml();
 		},
 
@@ -67,49 +67,7 @@
 
 			this._map = map;
 
-			this.update();
-
 			return div;
-		},
-
-		update: function() {
-			this._updateStyles();
-			this._generateHtml();
-		},
-
-		_updateStyles: function() {
-			for (var id in this._watchedLayers)
-				this._setStyleForLayer(this._watchedLayers[id]);
-		},
-
-		_setStyleForLayer: function(layer) {
-			if (layer.options && 'legend' in layer.options && layer.options.legend) {
-
-				if (!("selectedStyle" in layer.options))
-					layer.options.selectedStyle = 0;
-
-				var styleFct = function(feature) {
-					var style = layer.options.legend[layer.options.selectedStyle].style;
-
-					var fieldValues = [];
-					for (var i = 0; i < style.fields.length; ++i) {
-						// TODO: check for existence of the field in the feature's properties
-						fieldValues.push(feature.properties[style.fields[i]]);
-					}
-
-					for (var i = 0; i < style.expressions.length; ++i) {
-						var exprObject = style.expressions[i];
-						// We need to invoke the method with apply, because our format function
-						// isn't prepared to accept arrays
-						var formatted = "".format.apply(exprObject.expr, fieldValues);
-						if (eval(formatted) === true) {
-							return exprObject.style;
-						}
-					}
-				};
-				layer.setStyle(styleFct);
-				layer.options.style = styleFct;
-			}
 		},
 
 		_generateHtml: function() {
@@ -128,25 +86,9 @@
 				return me._onTransitionEnd(event, me);
 			}, false);
 
-			for (var id in this._watchedLayers) {
-				var layer = this._watchedLayers[id];
-
-				if (!layer.options || !layer.options.legend) return;
-
-				var options = layer.options;
-
-				var legend = options.legend[options.selectedStyle || 0];
-
-				if (!legend.showLegend) continue;
-
-				me.visibleLegendDiv.innerHTML += "<p><strong>" + legend.title + "</strong></p>";
-
-				for (var i = 0; i < legend.style.expressions.length; ++i) {
-					var symbology = legend.style.expressions[i];
-					me.visibleLegendDiv.innerHTML +=
-						'<li style="list-style:none"><i style="' + symbology.legendStyle + '" ></i>' +
-						symbology.name + "</li>";
-				}
+			for (var i = 0 ; i < this._legendGraphicUrls.length ; ++i) {
+				this.visibleLegendDiv.innerHTML += 
+					'<p><img src="' + this._legendGraphicUrls[i] + '" alt="__legend__"/></p>';
 			}
 
 			this._prepareHideButton();
