@@ -1,6 +1,8 @@
 VERY RECENT PACKAGE
 
-Simple legend control for leaflet. Heavily based on the choropleth demo at http://leafletjs.com/examples/choropleth.html
+Simple legend control for leaflet. Calls a GetLegendGraphic url and displays it inside a leaflet control.
+
+##Usage
 
 First, create and add the control to the map:
 
@@ -15,36 +17,29 @@ First, create and add the control to the map:
     legendControl.addTo(map);
 
 
-Then load your layer, add it to the map and add a 'legend' property to its options:
+Construct the GetLegendGraphic url:
 
-    layer.options.legend = [{
-        title: "Props", /* This is the title of the legend */
-        showLegend: true, /* Whether the legend should be visible or not */
-        style: { /* Object containing all style definitions */
-            fields: ["myprop", "myotherprop"], /* Which feature properties will this styling use */
-            expressions: [{ /* Expressions are evaluated. When true, the given styling is applied */
-                name: "MyProp = MyOtherProp", /* Text that will be displayed on the legend control */
-                expr: "{0} == {1}", /* Expression to evaluate  */
-                style: { /* Leaflet styling to apply in case the expression is evaluated to true */
-                    fillColor: "#FF0000",
-                    fillOpacity: 1,
-                    weight: 1
-                },
-                legendStyle: "background:#FF0000" /* Legend (css) styling to apply to the <i> object */
-            }]
-        }
-    }];
+    var url = "http://localhost:8080/geoserver/wms";
+
+    var legendGraphicOptions = {
+        request:'GetLegendGraphic',
+        version: '1.0.0',
+        format: 'image/jpeg',
+        layer: 'topp:states',
+        style: '',
+        legend_options: 'forceLabels:on'
+    };
+
+    var legendUrl = url + L.Util.getParamString(legendGraphicOptions);
 
 
-(the style property is added as inline style to an \<i\> tag)
-
-Finally, tell the control to watch that layer and display styles and legend for it:
+And finally, add this layer to the legend control:
 
 
-    legendControl.AddLayer(layer)
+    legendControl.AddLegendGraphic(legendUrl);
 
 
-You can define multiple styles and legends for a layer, that's why layer.options.legend is an array. Use the layer.options.selectedStyle to select a style in that array. Later, call legendControl.update() to update the legend and styles. 
+You can also remove that URL anytime to remove the image from the control:
 
+    legendControl.RemoveLegendGraphic(legendUrl);
 
-Things are kinda working, but there is still a lot of work to do.
